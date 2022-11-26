@@ -1,54 +1,66 @@
 package com.FileExplorer.controller;
 
-import com.FileExplorer.dtos.LoginDto;
+import com.FileExplorer.entity.User;
 import com.FileExplorer.handler.ResponseHandler;
-import com.FileExplorer.service.tokenService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.json.JSONObject;
+import com.FileExplorer.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api")
 public class AuthController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
     @Autowired
-    private tokenService tokenService;
+    private AuthService authService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthController(tokenService tokenService, AuthenticationManager authenticationManager) {
-        this.tokenService = tokenService;
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager) {
+        this.authService = authService;
         this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/login")
-//    @RequestMapping(value = "/login",
-//            method = RequestMethod.POST,
-//            consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Object> Login(@RequestParam("username") String username,
                                         @RequestParam("password") String password) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                username,
-                password
-        ));
-        LOG.debug("Token for: " + authentication.getName());
-        String token = tokenService.generateToken(authentication);
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//                username,
+//                password
+//        ));
+        LOG.debug("Token for: " + username);
+        String token = authService.login(username, password);
         LOG.debug("Token is generated { " + token + " }");
         Map<String, Object> data = new HashMap<>();
         data.put("accessToken", token);
         return ResponseHandler.responseBuilder(true, HttpStatus.OK, "Login success", data);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Object> register(
+            @RequestParam("fullName") String fullName,
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("email") String email) {
+        //        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//                username,
+//                password
+//        ));
+//        LOG.debug("Token for: " + authentication.getName());
+//        String token = authService.generateToken(authentication);
+//        LOG.debug("Token is generated { " + token + " }\nNew user is registered");
+        Map<String, Object> data = new HashMap<>();
+        data = authService.register(fullName, username, email, password);
+        return ResponseHandler.responseBuilder(true, HttpStatus.OK, "Register success", data);
     }
 }
