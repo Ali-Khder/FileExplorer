@@ -33,14 +33,7 @@ public class AuthService {
     }
 
     public String generateToken(String username) {
-        List<User> users = userRepository.findAll();
-        User user = new User();
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUsername().equals(username)) {
-                user = users.get(i);
-                break;
-            }
-        }
+        User user = userRepository.getByUsername(username);
         UserAuth auth = new UserAuth(user);
         Instant now = Instant.now();
 
@@ -61,12 +54,19 @@ public class AuthService {
     }
 
     public String login(String username, String password) {
+        Optional<User> checkUsername = userRepository
+                .findByUsername(username);
+        if (!checkUsername.isPresent()) {
+            throw new CustomException("User not found");
+        }
+
         User user = userRepository
                 .getByUsername(username);
         boolean result = passwordEncoder.matches(password, user.getPassword());
         if (!result) {
             throw new CustomException("Login failed, password incorrect!");
         }
+
         String token = generateToken(username);
         return token;
     }
@@ -89,7 +89,7 @@ public class AuthService {
             throw new CustomException("username taken");
         }
 
-        User user = new User(fullName, username, email, password, "ROLE_USER");
+        User user = new User(fullName, username, email, passwordEncoder.encode(password), "ROLE_USER");
         userRepository.save(user);
         String token = generateToken(username);
         Map<String, Object> data = new HashMap<>();

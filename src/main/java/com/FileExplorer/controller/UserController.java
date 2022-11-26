@@ -17,8 +17,8 @@ import java.security.Principal;
 @RequestMapping(path = "/api/auth")
 public class UserController {
 
-    @GetMapping
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping
     public ResponseEntity<Object> home(Principal principal) {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK,
                 "Hello, " + principal.getName(), null);
