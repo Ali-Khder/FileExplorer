@@ -2,21 +2,21 @@ package com.FileExplorer.dto.auth;
 
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public class RegisterDto {
 
-    @NotNull
+    @NotBlank
     private String username;
 
     @Email
-    @NotNull
+    @NotBlank
     private String email;
 
-    @NotNull
+    @NotBlank
     private String fullName;
 
-    @NotNull
+    @NotBlank
     private String password;
 
     public RegisterDto() {

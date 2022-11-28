@@ -1,13 +1,14 @@
 package com.FileExplorer.dto.auth;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class LoginDto {
 
-    @NotNull
+    @NotBlank
     private String username;
 
-    @NotNull
+    @NotBlank
     private String password;
 
     public LoginDto() {
