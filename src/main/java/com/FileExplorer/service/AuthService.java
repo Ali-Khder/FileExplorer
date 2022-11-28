@@ -1,5 +1,6 @@
 package com.FileExplorer.service;
 
+import com.FileExplorer.dto.auth.RegisterDto;
 import com.FileExplorer.entity.User;
 import com.FileExplorer.entity.UserAuth;
 import com.FileExplorer.handler.CustomException;
@@ -55,29 +56,32 @@ public class AuthService {
                 .getTokenValue();
     }
 
-    public String login(String username, String password) {
+    public Map<String, Object> login(String username, String password) {
 
         String token = generateToken(username);
-        System.out.println(this.passwordEncoder.encode(password));
-        return token;
+        Map<String, Object> data = new HashMap<>();
+        data.put("accessToken", token);
+        return data;
     }
 
     @Transactional
     public Map<String, Object> register(
-            String fullName,
-            String username,
-            String email,
-            String password) {
-        Optional<User> checkEmail = userRepository
-                .findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new CustomException("email taken");
-        }
+            RegisterDto registerDto) {
+        String username = registerDto.getUsername();
+        String fullName = registerDto.getFullName();
+        String email = registerDto.getEmail();
+        String password = registerDto.getPassword();
 
         Optional<User> checkUsername = userRepository
                 .findByUsername(username);
         if (checkUsername.isPresent()) {
             throw new CustomException("username taken");
+        }
+
+        Optional<User> checkEmail = userRepository
+                .findByEmail(email);
+        if (checkEmail.isPresent()) {
+            throw new CustomException("email taken");
         }
 
         User user = new User(fullName, username, email, passwordEncoder.encode(password), "ROLE_USER");

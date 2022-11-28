@@ -1,8 +1,11 @@
 package com.FileExplorer.controller;
 
+import com.FileExplorer.dto.auth.LoginDto;
+import com.FileExplorer.dto.auth.RegisterDto;
 import com.FileExplorer.entity.User;
 import com.FileExplorer.handler.ResponseHandler;
 import com.FileExplorer.service.AuthService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,26 +36,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> Login(@RequestParam("username") String username,
-                                        @RequestParam("password") String password) {
-//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                username,
-//                password
-//        ));
-//        LOG.debug("Token for: " + username);
-        String token = authService.login(username, password);
-//        LOG.debug("Token is generated { " + token + " }");
-        Map<String, Object> data = new HashMap<>();
-        data.put("accessToken", token);
-        return ResponseHandler.responseBuilder(true, HttpStatus.OK, "Login success", data);
+    public ResponseEntity<Object> Login(@Valid LoginDto loginDto) {
+        return ResponseHandler.responseBuilder(true, HttpStatus.OK
+                , "Login success", authService.login(loginDto.getUsername(), loginDto.getPassword()));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(
-            @RequestParam("fullName") String fullName,
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("email") String email) {
+    public ResponseEntity<Object> register(@Valid RegisterDto registerDto) {
+        return ResponseHandler.responseBuilder(true, HttpStatus.OK
+                , "Register success", authService.register(registerDto));
         //        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 //                username,
 //                password
@@ -60,8 +52,5 @@ public class AuthController {
 //        LOG.debug("Token for: " + authentication.getName());
 //        String token = authService.generateToken(authentication);
 //        LOG.debug("Token is generated { " + token + " }\nNew user is registered");
-        Map<String, Object> data = new HashMap<>();
-        data = authService.register(fullName, username, email, password);
-        return ResponseHandler.responseBuilder(true, HttpStatus.OK, "Register success", data);
     }
 }
