@@ -29,6 +29,7 @@ public class JwtTokenUtils {
     public static String getMyUsername() {
         try {
             Map<String, Object> tokenMap = decode(getToken());
+//            System.out.println(tokenMap);
             return tokenMap.get("sub").toString();
         } catch (Exception e) {
             logger.error("JwtTokenUtils:debugPrint exception: " + e);
