@@ -5,6 +5,7 @@ import com.FileExplorer.dto.auth.RegisterDto;
 import com.FileExplorer.entity.User;
 import com.FileExplorer.handler.ResponseHandler;
 import com.FileExplorer.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> Login(@Valid LoginDto loginDto) {
+    public ResponseEntity<Object> Login(HttpServletRequest request,
+                                        @Valid LoginDto loginDto) {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK
                 , "Login success", authService.login(loginDto.getUsername(), loginDto.getPassword()));
     }
@@ -49,7 +51,6 @@ public class AuthController {
 //                username,
 //                password
 //        ));
-//        LOG.debug("Token for: " + authentication.getName());
 //        String token = authService.generateToken(authentication);
 //        LOG.debug("Token is generated { " + token + " }\nNew user is registered");
     }

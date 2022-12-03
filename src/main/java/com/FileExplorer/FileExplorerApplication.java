@@ -22,6 +22,16 @@ public class FileExplorerApplication {
         SpringApplication.run(FileExplorerApplication.class, args);
     }
 
+//    @Bean
+//    public DataSourceInitializer dataSourceInitializer(@Qualifier("dataSource") final DataSource dataSource) {
+//        ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
+//        resourceDatabasePopulator.addScript(new ClassPathResource("/logger.sql"));
+//        DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+//        dataSourceInitializer.setDataSource(dataSource);
+//        dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
+//        return dataSourceInitializer;
+//    }
+
     @Bean
     CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder encoder) {
         return args -> {
