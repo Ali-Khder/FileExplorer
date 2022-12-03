@@ -2,6 +2,7 @@ package com.FileExplorer.service;
 
 import com.FileExplorer.entity.Log;
 import com.FileExplorer.repository.LogRepository;
+import com.FileExplorer.security.JwtTokenUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +16,12 @@ import java.util.Map;
 @Service
 public class LogService {
     private final LogRepository logRepository;
+    private final JwtTokenUtils jwtTokenUtils;
 
-    public LogService(LogRepository logRepository) {
+    public LogService(LogRepository logRepository,
+                      JwtTokenUtils jwtTokenUtils) {
         this.logRepository = logRepository;
+        this.jwtTokenUtils = jwtTokenUtils;
     }
 
     public Log setLog(String method,
@@ -39,6 +43,7 @@ public class LogService {
     }
 
     public Map<String, Object> findPaginated(int page, int size) {
+        System.out.println(jwtTokenUtils.getMyUsername());
         List<Log> logs = new ArrayList<Log>();
         Pageable paging = PageRequest.of(page, size);
 
