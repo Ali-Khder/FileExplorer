@@ -2,6 +2,10 @@ package com.FileExplorer.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table
 public class User {
@@ -21,6 +25,15 @@ public class User {
     private String email;
     private String password;
     private String roles;
+
+    @ManyToMany
+    @JoinTable(name = "user_folders",
+            joinColumns = @JoinColumn(name = "user_id",
+                    referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "folder_id",
+                    referencedColumnName = "id")
+    )
+    private Set<Folder> folders = new HashSet<>();
 
     public User() {
     }
@@ -90,6 +103,14 @@ public class User {
         this.roles = roles;
     }
 
+    public Set<Folder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(Set<Folder> folders) {
+        this.folders = folders;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -98,7 +119,8 @@ public class User {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", role='" + roles + '\'' +
+                ", roles='" + roles + '\'' +
+                ", folders=" + folders +
                 '}';
     }
 }

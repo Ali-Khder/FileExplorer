@@ -39,7 +39,6 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         String requestBody = getStringValue(requestWrapper.getContentAsByteArray(),
                 request.getCharacterEncoding());
-        System.out.println(request);
         String responseBody = getStringValue(responseWrapper.getContentAsByteArray(),
                 response.getCharacterEncoding());
 
