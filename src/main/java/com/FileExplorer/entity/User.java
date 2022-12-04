@@ -1,5 +1,6 @@
 package com.FileExplorer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -26,6 +27,7 @@ public class User {
     private String password;
     private String roles;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "user_folders",
             joinColumns = @JoinColumn(name = "user_id",

@@ -1,5 +1,6 @@
 package com.FileExplorer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -22,6 +23,7 @@ public class Folder {
     private String name;
     private String ownerName;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "folders")
     private Set<User> users = new HashSet<>();
 

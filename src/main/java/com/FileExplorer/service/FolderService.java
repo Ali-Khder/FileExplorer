@@ -9,6 +9,7 @@ import com.FileExplorer.security.JwtTokenUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -63,5 +64,9 @@ public class FolderService {
             folderRepository.save(folder);
         }
         return "";
+    }
+
+    public List<Folder> getAll() {
+        return folderRepository.findAll();
     }
 }

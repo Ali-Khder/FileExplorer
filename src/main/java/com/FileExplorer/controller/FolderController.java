@@ -24,7 +24,7 @@ public class FolderController {
     @GetMapping
     public ResponseEntity<Object> getFolders() {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK,
-                "Folders", null);
+                "Folders", folderService.getAll());
     }
 
     @PostMapping
