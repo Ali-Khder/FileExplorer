@@ -30,8 +30,9 @@ public class FolderService {
         String username = jwtTokenUtils.getMyUsername();
         User user = userRepository.findByUsername(username).get();
         Set<Folder> ownered = folderRepository.findByOwnerName(username);
-//        Set<Folder> folders = user.getFolders();
-        return ownered;
+        Set<Folder> folders = user.getFolders();
+        folders.addAll(ownered);
+        return folders;
     }
 
     public Set<User> getFolderUsers(Long id) {
