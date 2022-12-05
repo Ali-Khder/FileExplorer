@@ -54,4 +54,11 @@ public class FolderController {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK,
                 "Folder updated successfully", folderService.folderdeleteUsers(id, userFolderDto.getUsersIds()));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteFolder(
+            @PathVariable Long id) {
+        return ResponseHandler.responseBuilder(true, HttpStatus.OK,
+                "Folder deleted successfully", folderService.folderDelete(id));
+    }
 }

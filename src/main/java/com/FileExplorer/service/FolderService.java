@@ -111,4 +111,9 @@ public class FolderService {
         }
         return "";
     }
+
+    public String folderDelete(Long id, Long... usersIds) {
+        folderRepository.deleteById(id);
+        return "";
+    }
 }
