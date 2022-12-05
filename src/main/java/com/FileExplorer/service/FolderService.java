@@ -40,6 +40,11 @@ public class FolderService {
         return folder.getUsers();
     }
 
+    public Set<Folder> getUsersFolders(Long id) {
+        Set<Folder> folders = userRepository.findById(id).get().getFolders();
+        return folders;
+    }
+
     @Transactional
     public Folder createFolder(String name) {
         String ownerName = jwtTokenUtils.getMyUsername();
