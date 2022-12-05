@@ -41,6 +41,12 @@ public class Folder {
         this.users = users;
     }
 
+    public Folder(Long id, String name, String ownerName) {
+        this.id = id;
+        this.name = name;
+        this.ownerName = ownerName;
+    }
+
     public Folder(Long id, String name, String ownerName, Set<User> users) {
         this.id = id;
         this.name = name;
