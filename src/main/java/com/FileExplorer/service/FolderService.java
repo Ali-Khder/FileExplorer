@@ -26,6 +26,17 @@ public class FolderService {
         this.jwtTokenUtils = jwtTokenUtils;
     }
 
+    public Set<Folder> getFolders() {
+        String username = jwtTokenUtils.getMyUsername();
+        User user = userRepository.findByUsername(username).get();
+        return user.getFolders();
+    }
+
+    public Set<User> getFolderUsers(Long id) {
+        Folder folder = folderRepository.findById(id).get();
+        return folder.getUsers();
+    }
+
     @Transactional
     public Folder createFolder(String name) {
         String ownerName = jwtTokenUtils.getMyUsername();
@@ -35,7 +46,7 @@ public class FolderService {
     }
 
     @Transactional
-    public String addUsersToFolder(Long id, Long[] usersIds) {
+    public String folderAddUsers(Long id, Long[] usersIds) {
         Optional<User> userOptional;
 
         for (Long userid : usersIds) {
@@ -66,7 +77,35 @@ public class FolderService {
         return "";
     }
 
-    public List<Folder> getAll() {
-        return folderRepository.findAll();
+    @Transactional
+    public String folderdeleteUsers(Long id, Long[] usersIds) {
+        Optional<User> userOptional;
+
+        for (Long userid : usersIds) {
+            userOptional = userRepository.findById(userid);
+            if (!userOptional.isPresent())
+                throw new CustomException("User with id " + userid + " not found");
+        }
+
+        User user;
+        Set<User> users;
+        Set<Folder> folders;
+        Folder folder = folderRepository.findById(id).get();
+
+        for (Long userid : usersIds) {
+            user = userRepository.findById(userid).get();
+
+            folders = user.getFolders();
+            folders.remove(folder);
+            user.setFolders(folders);
+
+            users = folder.getUsers();
+            users.remove(user);
+            folder.setUsers(users);
+
+            userRepository.save(user);
+            folderRepository.save(folder);
+        }
+        return "";
     }
 }

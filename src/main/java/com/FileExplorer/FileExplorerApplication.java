@@ -10,16 +10,33 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.CacheControl;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.concurrent.TimeUnit;
 
 @EnableConfigurationProperties(RsaKeyProperties.class)
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 @SpringBootApplication
 @Configuration
+@EnableWebMvc
 public class FileExplorerApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(FileExplorerApplication.class, args);
+    }
+
+    @Configuration
+    public class WebConfig implements WebMvcConfigurer {
+
+        @Override
+        public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            registry.addResourceHandler("/uploads/**")
+                    .addResourceLocations("/WEB-INF/uploads/");
+        }
     }
 
 //    @Bean

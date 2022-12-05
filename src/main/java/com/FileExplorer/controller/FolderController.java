@@ -24,7 +24,13 @@ public class FolderController {
     @GetMapping
     public ResponseEntity<Object> getFolders() {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK,
-                "Folders", folderService.getAll());
+                "Folders", folderService.getFolders());
+    }
+
+    @GetMapping("/users/get/{id}")
+    public ResponseEntity<Object> getFolderUsers(@PathVariable Long id) {
+        return ResponseHandler.responseBuilder(true, HttpStatus.OK,
+                "Folders", folderService.getFolderUsers(id));
     }
 
     @PostMapping
@@ -38,6 +44,14 @@ public class FolderController {
             @PathVariable Long id,
             UserFolderDto userFolderDto) {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK,
-                "Folder updated successfully", folderService.addUsersToFolder(id, userFolderDto.getUsersIds()));
+                "Folder updated successfully", folderService.folderAddUsers(id, userFolderDto.getUsersIds()));
+    }
+
+    @PutMapping("/users/delete/{id}")
+    public ResponseEntity<Object> deleteUsersFromFolder(
+            @PathVariable Long id,
+            UserFolderDto userFolderDto) {
+        return ResponseHandler.responseBuilder(true, HttpStatus.OK,
+                "Folder updated successfully", folderService.folderdeleteUsers(id, userFolderDto.getUsersIds()));
     }
 }

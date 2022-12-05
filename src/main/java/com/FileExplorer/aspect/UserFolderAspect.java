@@ -21,7 +21,7 @@ public class UserFolderAspect {
         this.folderRepository = folderRepository;
     }
 
-    @Before(value = "execution(* com.FileExplorer.service.FolderService.addUsersToFolder(..)) and args(id, usersIds)")
+    @Before(value = "execution(* com.FileExplorer.service.FolderService.folder*(..)) and args(id, usersIds)")
     public void folderAdvice(JoinPoint joinPoint, Long id, Long[] usersIds) {
         String username = jwtTokenUtils.getMyUsername();
         Folder folder = folderRepository.findById(id).get();
