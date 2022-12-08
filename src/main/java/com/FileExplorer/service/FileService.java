@@ -101,10 +101,12 @@ public class FileService {
         String username = JwtTokenUtils.getMyUsername();
         for (File file : files) {
             if (file.isStatus()) {
-                if (file.getBarrier() != null &&    !file.getBarrier().equals(username))
+                if (file.getBarrier() != null && !file.getBarrier().equals(username))
                     throw new CustomException("File with id " + file.getId() + " has already booked");
-                else
+                else {
                     file.setStatus(false);
+                    file.setBarrier("");
+                }
             }
         }
         fileRepository.saveAll(files);
