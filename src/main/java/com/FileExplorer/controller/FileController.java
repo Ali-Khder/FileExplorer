@@ -1,6 +1,8 @@
 package com.FileExplorer.controller;
 
+import com.FileExplorer.dto.foldersAndFiles.FileBookingDto;
 import com.FileExplorer.dto.foldersAndFiles.FileDto;
+import com.FileExplorer.dto.foldersAndFiles.UserFolderDto;
 import com.FileExplorer.handler.ResponseHandler;
 import com.FileExplorer.service.FileService;
 import jakarta.validation.Valid;
@@ -24,14 +26,58 @@ public class FileController {
         this.fileService = fileService;
     }
 
+    // path variable ID is for folder
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> index(@PathVariable Long id) {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "Files",
+                fileService.getAll(id)
+        );
+    }
+
+    @GetMapping("/show/{id}")
+    public ResponseEntity<Object> show(@PathVariable Long id) {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "File",
+                fileService.getFile(id)
+        );
+    }
+
     @PostMapping
     public ResponseEntity<Object> createFile(@Valid FileDto fileDto) throws IOException {
-        return ResponseHandler.responseBuilder(true, HttpStatus.OK
-                , "File created", fileService.createFile(
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "File created",
+                fileService.create(
                         fileDto.getName(),
                         fileDto.getFile(),
                         fileDto.getFolderId()
-                ));
+                )
+        );
+    }
 
+    @PutMapping("/booking")
+    public ResponseEntity<Object> bookFiles(FileBookingDto fileBookingDto) {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "Files updated successfully",
+                fileService.booking(fileBookingDto.getFilesIds())
+        );
+    }
+
+    @PutMapping("/booking/cancellation")
+    public ResponseEntity<Object> cancellationBookFiles(FileBookingDto fileBookingDto) {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "Files updated successfully",
+                fileService.bookingCancellation(fileBookingDto.getFilesIds())
+        );
     }
 }

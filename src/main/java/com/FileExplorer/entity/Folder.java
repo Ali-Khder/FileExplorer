@@ -27,6 +27,7 @@ public class Folder {
     @ManyToMany(mappedBy = "folders")
     private Set<User> users = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "folder")
     private Set<File> files;
 
@@ -55,6 +56,14 @@ public class Folder {
         this.name = name;
         this.ownerName = ownerName;
         this.users = users;
+    }
+
+    public Set<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(Set<File> files) {
+        this.files = files;
     }
 
     public String getOwnerName() {

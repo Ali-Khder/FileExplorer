@@ -12,10 +12,6 @@ public class UserFolderDto {
     public UserFolderDto() {
     }
 
-    public UserFolderDto(@NotBlank Long[] usersIds) {
-        this.usersIds = usersIds;
-    }
-
     public Long[] getUsersIds() {
         return usersIds;
     }

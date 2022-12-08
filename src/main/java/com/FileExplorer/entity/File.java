@@ -24,6 +24,7 @@ public class File {
     private Long id;
     private String name;
     private String path;
+    private String barrier;
     private boolean status;
 
     @ManyToOne
@@ -49,6 +50,23 @@ public class File {
         this.status = status;
         this.folder = folder;
         this.user = user;
+    }
+
+    public File(String name, String path, String barrier, boolean status, Folder folder, User user) {
+        this.name = name;
+        this.path = path;
+        this.barrier = barrier;
+        this.status = status;
+        this.folder = folder;
+        this.user = user;
+    }
+
+    public String getBarrier() {
+        return barrier;
+    }
+
+    public void setBarrier(String barrier) {
+        this.barrier = barrier;
     }
 
     public Long getId() {
@@ -105,6 +123,7 @@ public class File {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", path='" + path + '\'' +
+                ", barrier='" + barrier + '\'' +
                 ", status=" + status +
                 ", folder=" + folder +
                 ", user=" + user +
