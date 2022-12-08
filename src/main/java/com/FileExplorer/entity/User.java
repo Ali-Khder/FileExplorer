@@ -38,6 +38,9 @@ public class User {
     )
     private Set<Folder> folders = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<File> files;
+
     public User() {
     }
 

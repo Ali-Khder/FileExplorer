@@ -27,6 +27,9 @@ public class Folder {
     @ManyToMany(mappedBy = "folders")
     private Set<User> users = new HashSet<>();
 
+    @OneToMany(mappedBy = "folder")
+    private Set<File> files;
+
     public Folder() {
     }
 

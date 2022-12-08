@@ -1,7 +1,9 @@
 package com.FileExplorer.controller;
 
+import com.FileExplorer.dto.foldersAndFiles.FileDto;
 import com.FileExplorer.handler.ResponseHandler;
 import com.FileExplorer.service.FileService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,13 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createFile(@RequestParam(name = "file") MultipartFile file) throws IOException {
+    public ResponseEntity<Object> createFile(@Valid FileDto fileDto) throws IOException {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK
-                , "File created", fileService.createFile(file));
+                , "File created", fileService.createFile(
+                        fileDto.getName(),
+                        fileDto.getFile(),
+                        fileDto.getFolderId()
+                ));
 
     }
 }
