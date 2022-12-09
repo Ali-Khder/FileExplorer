@@ -9,6 +9,7 @@ import com.FileExplorer.security.JwtTokenUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,9 +29,12 @@ public class FolderService {
 
     public Set<Folder> getFolders() {
         String username = jwtTokenUtils.getMyUsername();
+        Set<Folder> folders = new HashSet<>();
+        Folder publicFolder = folderRepository.findById(1L).get();
         User user = userRepository.findByUsername(username).get();
         Set<Folder> ownered = folderRepository.findByOwnerName(username);
-        Set<Folder> folders = user.getFolders();
+        folders.add(publicFolder);
+        folders.addAll(user.getFolders());
         folders.addAll(ownered);
         return folders;
     }
