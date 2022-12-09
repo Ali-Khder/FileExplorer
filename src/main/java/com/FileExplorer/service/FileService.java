@@ -9,11 +9,14 @@ import com.FileExplorer.repository.FolderRepository;
 import com.FileExplorer.repository.UserRepository;
 import com.FileExplorer.security.JwtTokenUtils;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -166,6 +169,26 @@ public class FileService {
         }
         fileRepository.delete(file);
         return "";
+    }
+
+    public Resource loadFileAsResource(String fileName) {
+        try {
+            String absolutePath = new FileSystemResource("").getFile().getAbsolutePath();
+            Path fileStorageLocation = Paths.get(absolutePath + "/src/main/webapp/WEB-INF/uploads")
+                    .toAbsolutePath().normalize();
+            Path filePath = fileStorageLocation.resolve(fileName).normalize();
+            System.out.println(fileStorageLocation);
+            System.out.println(filePath);
+            System.out.println(filePath.toUri());
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new CustomException("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            throw new CustomException("File not found " + fileName);
+        }
     }
 
     private List<File> checkIds(Long[] filesIds) {
