@@ -47,6 +47,16 @@ public class FileController {
         );
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "File",
+                fileService.fileDelete(id)
+        );
+    }
+
     @PostMapping
     public ResponseEntity<Object> createFile(@Valid FileDto fileDto) throws IOException {
         return ResponseHandler.responseBuilder(
@@ -57,6 +67,22 @@ public class FileController {
                         fileDto.getName(),
                         fileDto.getFile(),
                         fileDto.getFolderId()
+                )
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateFile(
+            @PathVariable Long id,
+            @Valid FileDto fileDto) throws IOException {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "File updated",
+                fileService.update(
+                        id,
+                        fileDto.getName(),
+                        fileDto.getFile()
                 )
         );
     }

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
@@ -79,6 +80,45 @@ public class FileService {
     }
 
     @Transactional
+    public File update(Long id, String name, MultipartFile file) throws IOException {
+        Optional<File> fileOptional = fileRepository.findByName(name);
+        File DBFile;
+        if (fileOptional.isPresent()) {
+            if (fileOptional.get().getId() != id)
+                throw new CustomException("Name has already token");
+            else
+                DBFile = fileOptional.get();
+        } else {
+            DBFile = fileRepository.findById(id).get();
+        }
+
+        String username = JwtTokenUtils.getMyUsername();
+        if (DBFile.isStatus()) {
+            if (DBFile.getBarrier() != null && !DBFile.getBarrier().equals(username)) {
+                throw new CustomException("File with id " + DBFile.getId() + " has already booked");
+            }
+        }
+        if (file != null) {
+            java.io.File fileToDelete = new java.io.File("/src/main/webapp/WEB-INF/" + DBFile.getPath());
+            boolean success = fileToDelete.delete();
+            System.out.println(success);
+            String absolutePath = new FileSystemResource("").getFile().getAbsolutePath();
+            String path = absolutePath + "\\src\\main\\webapp\\WEB-INF\\uploads\\";
+            Long now = Instant.now().getEpochSecond();
+            var fileName = now + " - " + file.getOriginalFilename();
+            var is = file.getInputStream();
+
+            Files.copy(is, Paths.get(path + fileName),
+                    StandardCopyOption.REPLACE_EXISTING);
+            String PUBLIC_PATH = "uploads/" + fileName;
+            DBFile.setPath(PUBLIC_PATH);
+        }
+        DBFile.setName(name);
+        fileRepository.save(DBFile);
+        return DBFile;
+    }
+
+    @Transactional
     public String booking(Long[] filesIds) {
         List<File> files = checkIds(filesIds);
         String username = JwtTokenUtils.getMyUsername();
@@ -114,7 +154,17 @@ public class FileService {
     }
 
     public String fileDelete(Long id) {
-        File file = fileRepository.findById(id).get();
+        Optional<File> fileOptional = fileRepository.findById(id);
+        if (!fileOptional.isPresent())
+            throw new CustomException("File with id " + id + " not found");
+        File file = fileOptional.get();
+        String username = JwtTokenUtils.getMyUsername();
+        if (file.isStatus()) {
+            if (file.getBarrier() != null && !file.getBarrier().equals(username)) {
+                throw new CustomException("File with id " + file.getId() + " has already booked");
+            }
+        }
+        fileRepository.delete(file);
         return "";
     }
 

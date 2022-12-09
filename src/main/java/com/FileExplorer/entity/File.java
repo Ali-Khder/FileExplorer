@@ -44,6 +44,9 @@ public class File {
     public File() {
     }
 
+    public File(String s) {
+    }
+
     public File(String name, String path, boolean status, Folder folder, User user) {
         this.name = name;
         this.path = path;
