@@ -4,6 +4,7 @@ import com.FileExplorer.entity.File;
 import com.FileExplorer.entity.Folder;
 import com.FileExplorer.entity.User;
 import com.FileExplorer.handler.CustomException;
+import com.FileExplorer.interfaces.selectedOnlyForReports;
 import com.FileExplorer.repository.FileRepository;
 import com.FileExplorer.repository.FolderRepository;
 import com.FileExplorer.repository.UserRepository;
@@ -21,11 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FileService {
@@ -43,6 +42,10 @@ public class FileService {
 
     public Set<File> getAll(Long id) {
         return folderRepository.findById(id).get().getFiles();
+    }
+
+    public List<selectedOnlyForReports> getReports() {
+        return fileRepository.findAllByOrderByCreatedAtDesc();
     }
 
     public File getFile(Long id) {
@@ -74,10 +77,12 @@ public class FileService {
                 (
                         name,
                         PUBLIC_PATH,
+                        username,
                         false,
                         folderOptional.get(),
                         user
                 );
+        DBFile.setCreatedAt(new Date());
         fileRepository.save(DBFile);
         return DBFile;
     }
@@ -117,6 +122,7 @@ public class FileService {
             DBFile.setPath(PUBLIC_PATH);
         }
         DBFile.setName(name);
+        DBFile.setUpdatedAt(new Date());
         fileRepository.save(DBFile);
         return DBFile;
     }
@@ -132,6 +138,7 @@ public class FileService {
             } else {
                 file.setBarrier(username);
                 file.setStatus(true);
+                file.setBookedAt(new Date());
             }
         }
         fileRepository.saveAll(files);
@@ -149,6 +156,7 @@ public class FileService {
                 else {
                     file.setStatus(false);
                     file.setBarrier("");
+                    file.setUnbookedAt(new Date());
                 }
             }
         }

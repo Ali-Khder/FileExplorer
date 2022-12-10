@@ -1,10 +1,14 @@
 package com.FileExplorer.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +30,18 @@ public class File {
     private String path;
     private String barrier;
     private boolean status;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date createdAt;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date bookedAt;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date unbookedAt;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
+    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = false)
@@ -120,6 +136,38 @@ public class File {
         this.user = user;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getBookedAt() {
+        return bookedAt;
+    }
+
+    public void setBookedAt(Date bookedAt) {
+        this.bookedAt = bookedAt;
+    }
+
+    public Date getUnbookedAt() {
+        return unbookedAt;
+    }
+
+    public void setUnbookedAt(Date unbookedAt) {
+        this.unbookedAt = unbookedAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
         return "File{" +
@@ -128,6 +176,10 @@ public class File {
                 ", path='" + path + '\'' +
                 ", barrier='" + barrier + '\'' +
                 ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", bookedAt=" + bookedAt +
+                ", unbookedAt=" + unbookedAt +
+                ", updatedAt=" + updatedAt +
                 ", folder=" + folder +
                 ", user=" + user +
                 '}';

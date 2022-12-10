@@ -51,6 +51,16 @@ public class FileController {
         );
     }
 
+    @GetMapping("/report/get")
+    public ResponseEntity<Object> getReports() {
+        return ResponseHandler.responseBuilder(
+                true,
+                HttpStatus.OK,
+                "Reports",
+                fileService.getReports()
+        );
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
         return ResponseHandler.responseBuilder(
