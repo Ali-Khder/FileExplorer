@@ -9,6 +9,8 @@ import com.FileExplorer.repository.FileRepository;
 import com.FileExplorer.repository.FolderRepository;
 import com.FileExplorer.repository.UserRepository;
 import com.FileExplorer.security.JwtTokenUtils;
+import com.FileExplorer.service.properties.FilesProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,25 +24,34 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 
 @Service
 public class FileService {
+    private int maxUpload = 0;
     private final UserRepository userRepository;
     private final FileRepository fileRepository;
+    //    private final FilesProperties filesProperties;
     private final FolderRepository folderRepository;
 
     public FileService(UserRepository userRepository,
                        FileRepository fileRepository,
+//                       FilesProperties filesProperties,
                        FolderRepository folderRepository) {
         this.userRepository = userRepository;
         this.fileRepository = fileRepository;
+//        this.filesProperties = filesProperties;
         this.folderRepository = folderRepository;
     }
 
+//    @Bean
+//    int getMaxUpload() {
+//        return filesProperties.maxUpload();
+//    }
+
     public Set<File> getAll(Long id) {
+//        System.out.println(getMaxUpload());
         return folderRepository.findById(id).get().getFiles();
     }
 
@@ -49,7 +60,11 @@ public class FileService {
     }
 
     public File getFile(Long id) {
-        return fileRepository.findById(id).get();
+        Optional<File> fileOptional = fileRepository.findById(id);
+        if (!fileOptional.isPresent()) {
+            throw new CustomException("Name has already token");
+        }
+        return fileOptional.get();
     }
 
     public File create(String name, MultipartFile file, Long folderId) throws IOException {
@@ -77,7 +92,7 @@ public class FileService {
                 (
                         name,
                         PUBLIC_PATH,
-                        username,
+                        /*username,*/
                         false,
                         folderOptional.get(),
                         user
@@ -170,24 +185,29 @@ public class FileService {
             throw new CustomException("File with id " + id + " not found");
         File file = fileOptional.get();
         String username = JwtTokenUtils.getMyUsername();
+        if (file.getUser().getUsername().equals(username))
+            throw new CustomException("Cannot delete this file");
+
         if (file.isStatus()) {
             if (file.getBarrier() != null && !file.getBarrier().equals(username)) {
                 throw new CustomException("File with id " + file.getId() + " has already booked");
             }
         }
-        fileRepository.delete(file);
+        java.io.File fileToDelete = new java.io.File("/src/main/webapp/WEB-INF/" + file.getPath());
+        boolean success = fileToDelete.delete();
+        if (success)
+            fileRepository.delete(file);
         return "";
     }
 
-    public Resource loadFileAsResource(String fileName) {
+    public Resource loadFileAsResource(Long id) {
+        File file = fileRepository.findById(id).get();
+        String fileName = file.getPath().split("/")[1];
         try {
             String absolutePath = new FileSystemResource("").getFile().getAbsolutePath();
             Path fileStorageLocation = Paths.get(absolutePath + "/src/main/webapp/WEB-INF/uploads")
                     .toAbsolutePath().normalize();
             Path filePath = fileStorageLocation.resolve(fileName).normalize();
-            System.out.println(fileStorageLocation);
-            System.out.println(filePath);
-            System.out.println(filePath.toUri());
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;

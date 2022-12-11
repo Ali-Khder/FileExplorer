@@ -30,7 +30,7 @@ public class FolderController {
     @GetMapping("/users/get/{id}")
     public ResponseEntity<Object> getFolderUsers(@PathVariable Long id) {
         return ResponseHandler.responseBuilder(true, HttpStatus.OK,
-                "Folders", folderService.getFolderUsers(id));
+                "Users", folderService.getFolderUsers(id));
     }
 
     @PostMapping

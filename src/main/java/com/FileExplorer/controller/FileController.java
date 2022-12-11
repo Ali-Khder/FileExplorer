@@ -66,7 +66,7 @@ public class FileController {
         return ResponseHandler.responseBuilder(
                 true,
                 HttpStatus.OK,
-                "File",
+                "File deleted successfully",
                 fileService.fileDelete(id)
         );
     }
@@ -76,7 +76,7 @@ public class FileController {
         return ResponseHandler.responseBuilder(
                 true,
                 HttpStatus.OK,
-                "File created",
+                "File created successfully",
                 fileService.create(
                         fileDto.getName(),
                         fileDto.getFile(),
@@ -92,7 +92,7 @@ public class FileController {
         return ResponseHandler.responseBuilder(
                 true,
                 HttpStatus.OK,
-                "File updated",
+                "File updated successfully",
                 fileService.update(
                         id,
                         fileDto.getName(),
@@ -121,10 +121,10 @@ public class FileController {
         );
     }
 
-    @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id, HttpServletRequest request) {
         // Load file as Resource
-        Resource resource = fileService.loadFileAsResource(fileName);
+        Resource resource = fileService.loadFileAsResource(id);
 
         // Try to determine file's content type
         String contentType = null;
