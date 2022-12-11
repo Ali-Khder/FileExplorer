@@ -27,6 +27,7 @@ public class User {
     @JsonIgnore
     private String password;
     private String roles;
+    private int uploads;
 
     @JsonIgnore
     @ManyToMany
@@ -38,6 +39,7 @@ public class User {
     )
     private Set<Folder> folders = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Set<File> files;
 
@@ -117,6 +119,22 @@ public class User {
         this.folders = folders;
     }
 
+    public int getUploads() {
+        return uploads;
+    }
+
+    public void setUploads(int uploads) {
+        this.uploads = uploads;
+    }
+
+    public Set<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(Set<File> files) {
+        this.files = files;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -126,7 +144,9 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", roles='" + roles + '\'' +
+                ", uploads=" + uploads +
                 ", folders=" + folders +
+                ", files=" + files +
                 '}';
     }
 }

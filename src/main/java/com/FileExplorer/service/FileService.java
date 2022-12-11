@@ -10,6 +10,7 @@ import com.FileExplorer.repository.FolderRepository;
 import com.FileExplorer.repository.UserRepository;
 import com.FileExplorer.security.JwtTokenUtils;
 import com.FileExplorer.service.properties.FilesProperties;
+import com.FileExplorer.utils.ConfigUtility;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -32,16 +33,16 @@ public class FileService {
     private int maxUpload = 0;
     private final UserRepository userRepository;
     private final FileRepository fileRepository;
-    //    private final FilesProperties filesProperties;
+    private final ConfigUtility configUtility;
     private final FolderRepository folderRepository;
 
     public FileService(UserRepository userRepository,
                        FileRepository fileRepository,
-//                       FilesProperties filesProperties,
+                       ConfigUtility configUtility,
                        FolderRepository folderRepository) {
         this.userRepository = userRepository;
         this.fileRepository = fileRepository;
-//        this.filesProperties = filesProperties;
+        this.configUtility = configUtility;
         this.folderRepository = folderRepository;
     }
 
@@ -68,6 +69,13 @@ public class FileService {
     }
 
     public File create(String name, MultipartFile file, Long folderId) throws IOException {
+        String username = JwtTokenUtils.getMyUsername();
+        User user = userRepository.getByUsername(username);
+
+        int max = Integer.parseInt(configUtility.getProperty("file.max-upload"));
+        System.out.println(max);
+        if (user.getUploads() >= max)
+            throw new CustomException("You have reached the limit for uploading files");
 
         Optional<Folder> folderOptional = folderRepository.findById(folderId);
         if (!folderOptional.isPresent())
@@ -86,8 +94,6 @@ public class FileService {
         Files.copy(is, Paths.get(path + fileName),
                 StandardCopyOption.REPLACE_EXISTING);
         String PUBLIC_PATH = "uploads/" + fileName;
-        String username = JwtTokenUtils.getMyUsername();
-        User user = userRepository.getByUsername(username);
         File DBFile = new File
                 (
                         name,
@@ -99,6 +105,9 @@ public class FileService {
                 );
         DBFile.setCreatedAt(new Date());
         fileRepository.save(DBFile);
+        int uploads = user.getUploads();
+        user.setUploads(++uploads);
+        userRepository.save(user);
         return DBFile;
     }
 
