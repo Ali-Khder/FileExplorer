@@ -188,13 +188,13 @@ public class FileService {
         return "";
     }
 
-    public String fileDelete(Long id) {
+    public String fileDelete(Long id) throws IOException {
         Optional<File> fileOptional = fileRepository.findById(id);
         if (!fileOptional.isPresent())
             throw new CustomException("File with id " + id + " not found");
         File file = fileOptional.get();
         String username = JwtTokenUtils.getMyUsername();
-        if (file.getUser().getUsername().equals(username))
+        if (!file.getUser().getUsername().equals(username))
             throw new CustomException("Cannot delete this file");
 
         if (file.isStatus()) {
@@ -202,10 +202,12 @@ public class FileService {
                 throw new CustomException("File with id " + file.getId() + " has already booked");
             }
         }
-        java.io.File fileToDelete = new java.io.File("/src/main/webapp/WEB-INF/" + file.getPath());
-        boolean success = fileToDelete.delete();
-        if (success)
-            fileRepository.delete(file);
+        String absolutePath = new FileSystemResource("").getFile().getAbsolutePath();
+        Path path = Paths.get(absolutePath + "/src/main/webapp/WEB-INF/" + file.getPath());
+//        java.io.File fileToDelete = new java.io.File("/src/main/webapp/WEB-INF/" + file.getPath());
+        Files.delete(path);
+//        System.out.println(success);
+        fileRepository.delete(file);
         return "";
     }
 

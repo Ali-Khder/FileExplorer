@@ -35,7 +35,11 @@ public class SecurityConfig {
     private final JpaUserDetailsService jpaUserDetailsService;
     private final RsaKeyProperties rsaKeys;
     private final String[] PUBLIC_ENDPOINTS = {
-            "/api/login", "/api/register", "/api/files/download/*", "/uploads/*"
+            "/api/login",
+            "/api/register",
+            "/api/files/download/*",
+            "/uploads/*",
+            "/api/files/reports/export-excel",
     };
 
     public SecurityConfig(JpaUserDetailsService jpaUserDetailsService, RsaKeyProperties rsaKey) {

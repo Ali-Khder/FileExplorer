@@ -14,14 +14,14 @@ public interface selectedOnlyForReports {
     User getUser();
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    Date getCreatedAt();
+    String getCreatedAt();
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    Date getUpdatedAt();
+    String getUpdatedAt();
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    Date getBookedAt();
+    String getBookedAt();
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    Date getUnbookedAt();
+    String getUnbookedAt();
 }

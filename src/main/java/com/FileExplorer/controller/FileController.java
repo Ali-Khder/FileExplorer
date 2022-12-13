@@ -2,21 +2,25 @@ package com.FileExplorer.controller;
 
 import com.FileExplorer.dto.foldersAndFiles.FileBookingDto;
 import com.FileExplorer.dto.foldersAndFiles.FileDto;
-import com.FileExplorer.dto.foldersAndFiles.UserFolderDto;
 import com.FileExplorer.handler.ResponseHandler;
 import com.FileExplorer.service.FileService;
+import com.FileExplorer.service.ReportService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @CrossOrigin
 @RestController
@@ -25,9 +29,12 @@ public class FileController {
 
     @Autowired
     private FileService fileService;
+    @Autowired
+    private ReportService reportService;
 
-    public FileController(FileService fileService) {
+    public FileController(FileService fileService, ReportService reportService) {
         this.fileService = fileService;
+        this.reportService = reportService;
     }
 
     // path variable ID is for folder
@@ -62,7 +69,7 @@ public class FileController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Long id) {
+    public ResponseEntity<Object> delete(@PathVariable Long id) throws IOException {
         return ResponseHandler.responseBuilder(
                 true,
                 HttpStatus.OK,
@@ -143,5 +150,16 @@ public class FileController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/reports/export-excel")
+    public ResponseEntity<Resource> exportExcel(HttpServletResponse response) throws IOException {
+        String filename = "reports.xlsx";
+        InputStreamResource file = new InputStreamResource(reportService.generateExcelFile(response));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                .body(file);
     }
 }
