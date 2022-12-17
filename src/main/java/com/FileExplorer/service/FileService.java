@@ -11,6 +11,10 @@ import com.FileExplorer.repository.UserRepository;
 import com.FileExplorer.security.JwtTokenUtils;
 import com.FileExplorer.service.properties.FilesProperties;
 import com.FileExplorer.utils.ConfigUtility;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -51,8 +55,9 @@ public class FileService {
 //        return filesProperties.maxUpload();
 //    }
 
+    @Cacheable(cacheNames = "files")
     public Set<File> getAll(Long id) {
-//        System.out.println(getMaxUpload());
+        System.out.println("DB get all");
         return folderRepository.findById(id).get().getFiles();
     }
 
@@ -60,7 +65,9 @@ public class FileService {
         return fileRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    @Cacheable(cacheNames = "file", key = "#id")
     public File getFile(Long id) {
+        System.out.println("DB get");
         Optional<File> fileOptional = fileRepository.findById(id);
         if (!fileOptional.isPresent()) {
             throw new CustomException("Name has already token");
@@ -68,7 +75,12 @@ public class FileService {
         return fileOptional.get();
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "file", allEntries = true),
+            @CacheEvict(value = "files", allEntries = true)
+    })
     public File create(String name, MultipartFile file, Long folderId) throws IOException {
+        System.out.println("DB save");
         String username = JwtTokenUtils.getMyUsername();
         User user = userRepository.getByUsername(username);
 
@@ -112,7 +124,9 @@ public class FileService {
     }
 
     @Transactional
+    @CachePut(cacheNames = "file", key = "#id")
     public File update(Long id, String name, MultipartFile file) throws IOException {
+        System.out.println("DB update");
         Optional<File> fileOptional = fileRepository.findByName(name);
         File DBFile;
         if (fileOptional.isPresent()) {
@@ -188,7 +202,12 @@ public class FileService {
         return "";
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "file", allEntries = true),
+            @CacheEvict(value = "files", allEntries = true)
+    })
     public String fileDelete(Long id) throws IOException {
+        System.out.println("DB delete");
         Optional<File> fileOptional = fileRepository.findById(id);
         if (!fileOptional.isPresent())
             throw new CustomException("File with id " + id + " not found");

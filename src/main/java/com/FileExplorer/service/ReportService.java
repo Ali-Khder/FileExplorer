@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -36,7 +37,8 @@ public class ReportService {
     }
 
     private void writeHeader() {
-        sheet = workbook.createSheet("Report");
+        workbook = new XSSFWorkbook();
+        sheet = workbook.createSheet(Instant.now().getEpochSecond() + " - Report");
         Row row = sheet.createRow(0);
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();

@@ -40,6 +40,7 @@ public class SecurityConfig {
             "/api/files/download/*",
             "/uploads/*",
             "/api/files/reports/export-excel",
+            "/actuator/*"
     };
 
     public SecurityConfig(JpaUserDetailsService jpaUserDetailsService, RsaKeyProperties rsaKey) {
