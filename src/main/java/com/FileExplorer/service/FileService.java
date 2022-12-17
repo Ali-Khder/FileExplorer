@@ -212,6 +212,7 @@ public class FileService {
         if (!fileOptional.isPresent())
             throw new CustomException("File with id " + id + " not found");
         File file = fileOptional.get();
+        User user = file.getUser();
         String username = JwtTokenUtils.getMyUsername();
         if (!file.getUser().getUsername().equals(username))
             throw new CustomException("Cannot delete this file");
@@ -226,7 +227,11 @@ public class FileService {
 //        java.io.File fileToDelete = new java.io.File("/src/main/webapp/WEB-INF/" + file.getPath());
         Files.delete(path);
 //        System.out.println(success);
+        int uploads = user.getUploads();
+        uploads--;
+        user.setUploads(uploads);
         fileRepository.delete(file);
+        userRepository.save(user);
         return "";
     }
 
