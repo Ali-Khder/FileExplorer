@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.compress.utils.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
@@ -42,8 +46,6 @@ public class LoggingFilter extends OncePerRequestFilter {
         String responseBody = getStringValue(responseWrapper.getContentAsByteArray(),
                 response.getCharacterEncoding());
 
-        responseWrapper.copyBodyToResponse();
-
         Log log = logService.setLog(
                 request.getMethod(),
                 request.getRequestURI(),
@@ -59,6 +61,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         logger.debug(log.toString());
 
         logger.warn(log.toString());
+        responseWrapper.copyBodyToResponse();
     }
 
     private String getStringValue(byte[] contentAsByteArray, String charEncoding) {

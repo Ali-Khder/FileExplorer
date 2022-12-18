@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -29,7 +30,7 @@ public class Folder {
 
     @JsonIgnore
     @OneToMany(mappedBy = "folder")
-    private Set<File> files;
+    private List<File> files;
 
     public Folder() {
     }
@@ -58,11 +59,11 @@ public class Folder {
         this.users = users;
     }
 
-    public Set<File> getFiles() {
+    public List<File> getFiles() {
         return files;
     }
 
-    public void setFiles(Set<File> files) {
+    public void setFiles(List<File> files) {
         this.files = files;
     }
 

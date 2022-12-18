@@ -15,6 +15,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -69,6 +72,11 @@ public class FileController {
         );
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRED,
+            readOnly = false,
+            timeout = 100,
+            rollbackFor = Exception.class)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) throws IOException {
         return ResponseHandler.responseBuilder(
@@ -79,6 +87,11 @@ public class FileController {
         );
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED,
+            propagation = Propagation.REQUIRED,
+            readOnly = false,
+            timeout = 100,
+            rollbackFor = Exception.class)
     @PostMapping
     public ResponseEntity<Object> createFile(@Valid FileDto fileDto) throws IOException {
         return ResponseHandler.responseBuilder(
@@ -143,7 +156,7 @@ public class FileController {
         }
 
         // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
+        if (contentType == null) {
             contentType = "application/octet-stream";
         }
 

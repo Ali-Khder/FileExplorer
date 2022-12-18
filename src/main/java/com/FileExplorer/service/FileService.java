@@ -20,6 +20,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,7 +58,7 @@ public class FileService {
 //    }
 
     @Cacheable(cacheNames = "files")
-    public Set<File> getAll(Long id) {
+    public List<File> getAll(Long id) {
         System.out.println("DB get all");
         return folderRepository.findById(id).get().getFiles();
     }
@@ -65,20 +67,19 @@ public class FileService {
         return fileRepository.findAllByOrderByCreatedAtDesc();
     }
 
-    @Cacheable(cacheNames = "file", key = "#id")
     public File getFile(Long id) {
         System.out.println("DB get");
         Optional<File> fileOptional = fileRepository.findById(id);
         if (!fileOptional.isPresent()) {
-            throw new CustomException("Name has already token");
+            throw new CustomException("File does not exists");
         }
         return fileOptional.get();
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "file", allEntries = true),
-            @CacheEvict(value = "files", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "file", allEntries = true),
+//            @CacheEvict(value = "files", allEntries = true)
+//    })
     public File create(String name, MultipartFile file, Long folderId) throws IOException {
         System.out.println("DB save");
         String username = JwtTokenUtils.getMyUsername();
@@ -124,7 +125,7 @@ public class FileService {
     }
 
     @Transactional
-    @CachePut(cacheNames = "file", key = "#id")
+//    @CachePut(cacheNames = "file", key = "#id")
     public File update(Long id, String name, MultipartFile file) throws IOException {
         System.out.println("DB update");
         Optional<File> fileOptional = fileRepository.findByName(name);
@@ -165,7 +166,11 @@ public class FileService {
         return DBFile;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED,
+            propagation = Propagation.REQUIRED,
+            readOnly = false,
+            timeout = 100,
+            rollbackFor = Exception.class)
     public String booking(Long[] filesIds) {
         List<File> files = checkIds(filesIds);
         String username = JwtTokenUtils.getMyUsername();
@@ -183,7 +188,11 @@ public class FileService {
         return "";
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED,
+            propagation = Propagation.REQUIRED,
+            readOnly = false,
+            timeout = 100,
+            rollbackFor = Exception.class)
     public String bookingCancellation(Long[] filesIds) {
         List<File> files = checkIds(filesIds);
         String username = JwtTokenUtils.getMyUsername();
@@ -202,10 +211,10 @@ public class FileService {
         return "";
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = "file", allEntries = true),
-            @CacheEvict(value = "files", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "file", allEntries = true),
+//            @CacheEvict(value = "files", allEntries = true)
+//    })
     public String fileDelete(Long id) throws IOException {
         System.out.println("DB delete");
         Optional<File> fileOptional = fileRepository.findById(id);
