@@ -76,10 +76,7 @@ public class FileService {
         return fileOptional.get();
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "file", allEntries = true),
-//            @CacheEvict(value = "files", allEntries = true)
-//    })
+    @CacheEvict(value = "files", allEntries = true)
     public File create(String name, MultipartFile file, Long folderId) throws IOException {
         System.out.println("DB save");
         String username = JwtTokenUtils.getMyUsername();
@@ -125,7 +122,7 @@ public class FileService {
     }
 
     @Transactional
-//    @CachePut(cacheNames = "file", key = "#id")
+    @CacheEvict(value = "files", allEntries = true)
     public File update(Long id, String name, MultipartFile file) throws IOException {
         System.out.println("DB update");
         Optional<File> fileOptional = fileRepository.findByName(name);
@@ -211,10 +208,7 @@ public class FileService {
         return "";
     }
 
-//    @Caching(evict = {
-//            @CacheEvict(value = "file", allEntries = true),
-//            @CacheEvict(value = "files", allEntries = true)
-//    })
+    @CacheEvict(value = "files", allEntries = true)
     public String fileDelete(Long id) throws IOException {
         System.out.println("DB delete");
         Optional<File> fileOptional = fileRepository.findById(id);
