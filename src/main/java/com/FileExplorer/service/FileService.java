@@ -137,6 +137,11 @@ public class FileService {
         }
 
         String username = JwtTokenUtils.getMyUsername();
+
+        if (!DBFile.isStatus()) {
+            throw new CustomException("You need to booking this file");
+        }
+
         if (DBFile.isStatus()) {
             if (DBFile.getBarrier() != null && !DBFile.getBarrier().equals(username)) {
                 throw new CustomException("File with id " + DBFile.getId() + " has already booked");
@@ -241,6 +246,11 @@ public class FileService {
     public Resource loadFileAsResource(Long id) {
         File file = fileRepository.findById(id).get();
         String username = JwtTokenUtils.getMyUsername();
+
+        if (!file.isStatus()) {
+            throw new CustomException("You need to booking this file");
+        }
+
         if (file.isStatus()) {
             if (file.getBarrier() != null && !file.getBarrier().equals(username)) {
                 throw new CustomException("File with id " + file.getId() + " has already booked");
