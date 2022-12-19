@@ -27,8 +27,9 @@ public class AuthorizeAdminAspect {
         String username = jwtTokenUtils.getMyUsername();
         User user = userRepository
                 .findByUsername(username).get();
-        boolean authorize = false;
+        boolean authorize;
         String[] roles = user.getRoles().split(",");
+        authorize = false;
         for (String role : roles) {
             System.out.println(role);
             if (role.equals("ROLE_ADMIN")) {

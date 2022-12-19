@@ -9,10 +9,7 @@ import com.FileExplorer.security.JwtTokenUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class FolderService {
@@ -27,12 +24,19 @@ public class FolderService {
         this.jwtTokenUtils = jwtTokenUtils;
     }
 
-    public Set<Folder> getFolders() {
-        String username = jwtTokenUtils.getMyUsername();
-        Set<Folder> folders = new HashSet<>();
-        Folder publicFolder = folderRepository.findById(1L).get();
+    public List<Folder> getFolders() {
+        String username = JwtTokenUtils.getMyUsername();
         User user = userRepository.findByUsername(username).get();
-        Set<Folder> ownered = folderRepository.findByOwnerName(username);
+        String[] roles = user.getRoles().split(",");
+        for (String role : roles) {
+            System.out.println(role);
+            if (role.equals("ROLE_ADMIN")) {
+                return folderRepository.findAll();
+            }
+        }
+        List<Folder> folders = new ArrayList<>();
+        Folder publicFolder = folderRepository.findById(1L).get();
+        List<Folder> ownered = folderRepository.findByOwnerName(username);
         folders.add(publicFolder);
         folders.addAll(user.getFolders());
         folders.addAll(ownered);

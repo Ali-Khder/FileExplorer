@@ -240,6 +240,12 @@ public class FileService {
 
     public Resource loadFileAsResource(Long id) {
         File file = fileRepository.findById(id).get();
+        String username = JwtTokenUtils.getMyUsername();
+        if (file.isStatus()) {
+            if (file.getBarrier() != null && !file.getBarrier().equals(username)) {
+                throw new CustomException("File with id " + file.getId() + " has already booked");
+            }
+        }
         String fileName = file.getPath().split("/")[1];
         try {
             String absolutePath = new FileSystemResource("").getFile().getAbsolutePath();
